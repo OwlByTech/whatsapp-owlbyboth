@@ -66,7 +66,7 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
         const name = state.get('name');
         const idea = state.get('idea');
         
-        const channelId = process.env.CHANNEL_ID // Replace with your actual Discord channel ID
+        const channelId = process.env.CHANNEL_ID 
         const channel = await client.channels.fetch(channelId);
         if (channel?.isTextBased()) {
             channel.send(`Un cliente escribio al whatsapp acerca de una idea \n\n**Nombre:** ${name}\n**Idea:** ${idea}`);
