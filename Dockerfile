@@ -1,39 +1,17 @@
-# Image size ~ 400MB
-FROM node:21-alpine3.18 as builder
+# Usa una imagen base de Node.js
+FROM node:21
 
-WORKDIR /app
+# Establece el directorio de trabajo dentro del contenedor
+WORKDIR /usr/src/app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
-ENV PNPM_HOME=/usr/local/bin
-
+# Copia los archivos de la aplicación al directorio de trabajo
 COPY . .
 
-COPY package*.json *-lock.yaml ./
+# Instala las dependencias de la aplicación
+RUN npm install
 
-RUN apk add --no-cache --virtual .gyp \
-        python3 \
-        make \
-        g++ \
-    && apk add --no-cache git \
-    && pnpm install \
-    && apk del .gyp
+# Expone el puerto en el que corre la aplicación
+EXPOSE 3008
 
-FROM node:21-alpine3.18 as deploy
-
-WORKDIR /app
-
-ARG PORT
-ENV PORT $PORT
-EXPOSE $PORT
-
-COPY --from=builder /app ./
-COPY --from=builder /app/*.json /app/*-lock.yaml ./
-
-RUN corepack enable && corepack prepare pnpm@latest --activate 
-ENV PNPM_HOME=/usr/local/bin
-
-RUN npm cache clean --force && pnpm install --production --ignore-scripts \
-    && addgroup -g 1001 -S nodejs && adduser -S -u 1001 nodejs \
-    && rm -rf $PNPM_HOME/.npm $PNPM_HOME/.node-gyp
-
-CMD ["npm", "start"]
+# Define el comando para correr la aplicación
+CMD ["npm", "run", "dev"]
