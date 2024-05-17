@@ -1,17 +1,7 @@
-# Usa una imagen base de Node.js
-FROM node:21
-
-# Establece el directorio de trabajo dentro del contenedor
-WORKDIR /usr/src/app
-
-# Copia los archivos de la aplicación al directorio de trabajo
+FROM node:18-bullseye as bot
+WORKDIR /app
+COPY package*.json ./
+RUN npm i
 COPY . .
-
-# Instala las dependencias de la aplicación
-RUN npm install
-
-# Expone el puerto en el que corre la aplicación
-EXPOSE 3008
-
-# Define el comando para correr la aplicación
-CMD ["npm", "run", "dev"]
+ARG 3008
+CMD ["npm", "start"]
